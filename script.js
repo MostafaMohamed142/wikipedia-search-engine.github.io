@@ -1,15 +1,24 @@
 let resultsContainer = document.getElementsByClassName("container")[0];
-const validateInput = (el, delay = 1500) => {
-    let timerId;
-    clearTimeout(timerId);
-    timerId = setTimeout(() => {
+function debounce(cb,delay, leading = false){
+  let timer;
+  return (...args) =>{
+    clearTimeout(timer);
+    timer = setTimeout(()=>{
+      if(!leading)
+      cb(...args)
+    },delay)
+  }
+}
+let lastSearchValue = ""; 
+const validateInput = (el) => {
       if (el.value === "") {
         resultsContainer.innerHTML =
           "<p>Type something in the above search input</p>";
-      } else {
-        generateResults(el.value, el);
-      }
-    }, delay);
+      } else if (el.value !== lastSearchValue) { // check if the input value has changed
+        lastSearchValue = el.value; // update the last search value
+        debounce(() => generateResults(el.value, el), 1500)();
+    }
+    
   };
 
 const generateResults = (searchValue, inputField) => {
